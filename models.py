@@ -10,7 +10,6 @@ class GenomicWindow(BaseModel):
     stop: int
     NPs: List[str]   # All the NPs in which that slice was found in
 
-
 class AnalysisResult(BaseModel):
     window_count: int
     np_count: int
