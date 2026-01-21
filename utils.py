@@ -1,17 +1,9 @@
-from typing import List, Tuple
+from typing import List
 from models import NP, AnalysisResult, GenomicWindow
 
-# Creates list of NPs with just their IDs
-def init_nps(np_ids: List[str]) -> List[NP]:
-    init_with_ids = []
-    
-    for np_id in np_ids:
-        np = NP(id=np_id, windows=[])
-        init_with_ids.append(np)
-    
-    return init_with_ids
 
 def analyze_data(nuclear_profiles: List[NP], genomic_windows: List[GenomicWindow]):
+    print("Analyzing data...")
     average_windows_per_np, smallest_window_count, largest_window_count = analyze_nuclear_profiles(nuclear_profiles)
     average_nps_per_window, smallest_np_count, largest_np_count = analyze_genomic_windows(genomic_windows)
 
@@ -26,8 +18,7 @@ def analyze_data(nuclear_profiles: List[NP], genomic_windows: List[GenomicWindow
         largest_np_count=largest_np_count
     )
 
-# We use a single function because it's more efficient
-# Otherwise, we'd have to iterate over the large dataset multiple times
+
 def analyze_nuclear_profiles(np_data: List[NP]) -> AnalysisResult:
     total_nps = len(np_data)
     total_windows = 0

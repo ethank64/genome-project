@@ -1,10 +1,10 @@
 from typing import Tuple, List
-from utils import init_nps
-
 from models import GenomicWindow, NP
 
 
 def extract_data(file_path: str) -> Tuple[List[NP], List[GenomicWindow]]:
+    print("Parsing genomic window data...")
+
     with open(file_path, 'r') as data:
         # Get just the first line (has NPs)
         first_line = data.readline().strip()
@@ -17,8 +17,6 @@ def extract_data(file_path: str) -> Tuple[List[NP], List[GenomicWindow]]:
         nuclear_profiles = init_nps(np_ids)
 
         genomic_windows: List[GenomicWindow] = []
-        
-        print("Parsing genomic window data...")
         
         # For each row...
         for genomic_window in data:
@@ -57,3 +55,13 @@ def parse_row(window_row: str) -> Tuple[int, int, List[str]]:
     window_data = row[3:]  # Ignore position info
 
     return start, stop, window_data
+
+# Creates list of NPs with just their IDs
+def init_nps(np_ids: List[str]) -> List[NP]:
+    init_with_ids = []
+    
+    for np_id in np_ids:
+        np = NP(id=np_id, windows=[])
+        init_with_ids.append(np)
+    
+    return init_with_ids
