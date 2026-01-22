@@ -3,7 +3,8 @@ from models import NP, AnalysisResult, GenomicWindow
 
 
 # DF is basically how often windows showed up / total windows
-def fill_in_detection_frequency(nuclear_profiles: List[NP], total_genomic_windows: int):
+def fill_in_radial_position(nuclear_profiles: List[NP], total_genomic_windows: int):
+    # First, find the detection frequencies
     for np in nuclear_profiles:
         local_window_count = 0
 
@@ -16,8 +17,11 @@ def fill_in_detection_frequency(nuclear_profiles: List[NP], total_genomic_window
         df = local_window_count / total_genomic_windows
         np.detection_frequency = df
 
+
+
 # Compaction is basically the inverse of how spread out it is (which is the ratio of found / total)
 def fill_in_compaction(genomic_windows: List[GenomicWindow], total_nps: int):
+    # First, find how compact each window is
     for window in genomic_windows:
         local_np_count = len(window.NPs)
 
