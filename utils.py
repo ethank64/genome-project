@@ -1,7 +1,34 @@
+from threading import local
 from typing import List
 from models import NP, AnalysisResult, GenomicWindow
 
 
+def fill_in_detection_frequency(nuclear_profiles: List[NP], total_genomic_windows: int):
+    for np in nuclear_profiles:
+        local_window_count = 0
+
+        # Count up all the windows (1s) for this NP
+        for window in np.windows:
+            if window:
+                local_window_count += 1
+
+        # Calculate and set the detection frequency
+        df = local_window_count / total_genomic_windows
+        np.detection_frequency = df
+
+
+def fill_in_compaction(genomic_windows: List[GenomicWindow], total_nuclear_profiles: int):
+    for window in genomic_windows:
+        local_np_count = len(window.NPs)
+
+        compaction = local_np_count / total_nuclear_profiles
+        window.compaction = compaction
+
+
+        
+
+
+# Legacy code from activity 1
 def analyze_data(nuclear_profiles: List[NP], genomic_windows: List[GenomicWindow]):
     print("Analyzing data...")
     average_windows_per_np, smallest_window_count, largest_window_count = analyze_nuclear_profiles(nuclear_profiles)
@@ -27,12 +54,12 @@ def analyze_nuclear_profiles(np_data: List[NP]) -> AnalysisResult:
     smallest_num_windows = float('inf')
     largest_num_windows = float('-inf')
     
+    # For each nuclear profile...
     for np in np_data:
         local_window_count = 0  # Tracks the number of windows for that np
         
         # Count the number of windows
         for window in np.windows:
-
             # If the window is truthy (1)
             if window:
                 local_window_count += 1
