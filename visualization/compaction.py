@@ -20,9 +20,15 @@ def plot_compaction(genomic_windows: List[GenomicWindow]):
     left.grid(True, alpha=0.3)
     
     # Right plot: Bar chart of ratings (discrete values)
+    # Count how many windows have each rating value (e.g., how many have rating 1, rating 2, etc.)
     rating_counts = Counter(compaction_ratings)
     ratings = sorted(rating_counts.keys())
-    counts = [rating_counts[rating] for rating in ratings]
+    
+    # parallel list to store values for each rating
+    counts = []
+    for rating in ratings:
+        count = rating_counts[rating]
+        counts.append(count)
     
     right.bar(ratings, counts, edgecolor='black')
     right.set_xlabel("Compaction Rating")
