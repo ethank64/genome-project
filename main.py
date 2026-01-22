@@ -6,8 +6,8 @@ from visualization.radial_position import plot_radial_position
 def main():
         nuclear_profiles, genomic_windows = extract_data("./data.txt")
 
-        fill_in_radial_position(nuclear_profiles, len(genomic_windows))
-        fill_in_compaction(genomic_windows, len(nuclear_profiles))
+        fill_in_radial_position(nuclear_profiles, len(genomic_windows), 1, 5)
+        fill_in_compaction(genomic_windows, len(nuclear_profiles), 1, 10)
 
         plot_radial_position(nuclear_profiles)
         plot_compaction(genomic_windows)

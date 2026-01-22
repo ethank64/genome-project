@@ -1,10 +1,12 @@
 from typing import List
 from models import NP, AnalysisResult, GenomicWindow
+import statistics
 
 
 # DF is basically how often windows showed up / total windows
-def fill_in_radial_position(nuclear_profiles: List[NP], total_genomic_windows: int):
-    # First, find the detection frequencies
+def fill_in_radial_position(nuclear_profiles: List[NP], total_genomic_windows: int, min_rating, max_rating):
+    # First pass: calculate all detection frequencies
+    detection_frequencies = []
     for np in nuclear_profiles:
         local_window_count = 0
 
@@ -16,18 +18,54 @@ def fill_in_radial_position(nuclear_profiles: List[NP], total_genomic_windows: i
         # Calculate and set the detection frequency
         df = local_window_count / total_genomic_windows
         np.detection_frequency = df
-
-
+        detection_frequencies.append(df)
+    
+    
+    data_min = min(detection_frequencies)
+    data_max = max(detection_frequencies)
+    
+    # Map the detection frequency to a discrete rating
+    for np in nuclear_profiles:
+        np.radial_position_rating = map_range(np.detection_frequency, data_min, data_max, min_rating, max_rating)
 
 # Compaction is basically the inverse of how spread out it is (which is the ratio of found / total)
-def fill_in_compaction(genomic_windows: List[GenomicWindow], total_nps: int):
-    # First, find how compact each window is
+def fill_in_compaction(genomic_windows: List[GenomicWindow], total_nps: int, min_rating, max_rating):
+    # First pass: calculate all compaction values
+    compaction_values = []
     for window in genomic_windows:
         local_np_count = len(window.NPs)
 
         # If it showed up less -> higher compaction
         compaction = 1 - local_np_count / total_nps
         window.compaction = compaction
+        compaction_values.append(compaction)
+    
+    # Hard-coded. Probably not the best, but otherwise we get weird numbers
+    # I got this from looking at the raw compaction data. Seems like there's some
+    # extreme outliers past this value to the left
+    data_min = 0.853
+    data_max = max(compaction_values)
+    
+    # Map the actual compaction to a value between our selected range
+    # The process is manual, but it helps take the outliers out of the equation
+    for window in genomic_windows:
+        window.compaction_rating = map_range(window.compaction, data_min, data_max, min_rating, max_rating)
+
+
+# Implements p5.js's map function to take a value from one range to another
+def map_range(value, in_min, in_max, out_min, out_max):
+    value = clamp(value, in_min, in_max)
+
+    # Round the value to make it discrete
+    return round((value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
+
+def clamp(value, low, high):
+    return max(low, min(value, high))
+
+
+
+
+
 
 
 
