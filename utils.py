@@ -1,8 +1,8 @@
-from threading import local
 from typing import List
 from models import NP, AnalysisResult, GenomicWindow
 
 
+# DF is basically how often windows showed up / total windows
 def fill_in_detection_frequency(nuclear_profiles: List[NP], total_genomic_windows: int):
     for np in nuclear_profiles:
         local_window_count = 0
@@ -16,16 +16,17 @@ def fill_in_detection_frequency(nuclear_profiles: List[NP], total_genomic_window
         df = local_window_count / total_genomic_windows
         np.detection_frequency = df
 
-
-def fill_in_compaction(genomic_windows: List[GenomicWindow], total_nuclear_profiles: int):
+# Compaction is basically the inverse of how spread out it is (which is the ratio of found / total)
+def fill_in_compaction(genomic_windows: List[GenomicWindow], total_nps: int):
     for window in genomic_windows:
         local_np_count = len(window.NPs)
 
-        compaction = local_np_count / total_nuclear_profiles
+        # If it showed up less -> higher compaction
+        compaction = 1 - local_np_count / total_nps
         window.compaction = compaction
 
 
-        
+
 
 
 # Legacy code from activity 1
