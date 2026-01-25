@@ -13,6 +13,8 @@ def plot_radial_position(nuclear_profiles: List[NP]):
     fig, (left, right) = plt.subplots(1, 2, figsize=(12, 5))
     
     # Left plot: Histogram of detection frequency (continuous values)
+    # Convert the discrete values to a dictionary
+    # Each key is a different discrete value
     left.hist(detection_frequencies, bins=30, edgecolor='black')
     left.set_xlabel("Detection Frequency")
     left.set_ylabel("Number of Nuclear Profiles")
@@ -20,9 +22,14 @@ def plot_radial_position(nuclear_profiles: List[NP]):
     left.grid(True, alpha=0.3)
     
     # Right plot: Bar chart of ratings (discrete values)
+    # Discrete ratings -> keyed dictionary w/ counts for each value
     rating_counts = Counter(radial_position_ratings)
     ratings = sorted(rating_counts.keys())
-    counts = [rating_counts[rating] for rating in ratings]
+
+    counts = []
+    for rating in ratings:
+        count = rating_counts[rating]
+        counts.append(count)
     
     right.bar(ratings, counts, edgecolor='black')
     right.set_xlabel("Radial Position Rating")
