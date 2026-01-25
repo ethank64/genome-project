@@ -1,13 +1,17 @@
 import matplotlib.pyplot as plt
-from models import NP
-import numpy as nump
-from typing import List
-from collections import Counter
+import pandas as pd
+import numpy as np
 
-def plot_radial_position(nuclear_profiles: List[NP]):
-    # Extract original values and ratings
-    detection_frequencies = nump.array([np.detection_frequency for np in nuclear_profiles])
-    radial_position_ratings = nump.array([np.radial_position_rating for np in nuclear_profiles])
+def plot_radial_position(np_info_df: pd.DataFrame):
+    """
+    Plot radial position data from NP info DataFrame.
+    
+    Args:
+        np_info_df: DataFrame with columns 'np_id', 'detection_frequency', 'radial_position_rating'
+    """
+    # Extract values
+    detection_frequencies = np_info_df['detection_frequency'].values
+    radial_position_ratings = np_info_df['radial_position_rating'].values
     
     # Create side-by-side subplots
     fig, (left, right) = plt.subplots(1, 2, figsize=(12, 5))
@@ -20,6 +24,7 @@ def plot_radial_position(nuclear_profiles: List[NP]):
     left.grid(True, alpha=0.3)
     
     # Right plot: Bar chart of ratings (discrete values)
+    from collections import Counter
     rating_counts = Counter(radial_position_ratings)
     ratings = sorted(rating_counts.keys())
     counts = [rating_counts[rating] for rating in ratings]

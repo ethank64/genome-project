@@ -1,13 +1,17 @@
 import matplotlib.pyplot as plt
-from models import GenomicWindow
-import numpy as nump
-from typing import List
-from collections import Counter
+import pandas as pd
+import numpy as np
 
-def plot_compaction(genomic_windows: List[GenomicWindow]):
-    # Extract original values and ratings
-    compaction_values = nump.array([window.compaction for window in genomic_windows])
-    compaction_ratings = nump.array([window.compaction_rating for window in genomic_windows])
+def plot_compaction(df: pd.DataFrame):
+    """
+    Plot compaction data from DataFrame.
+    
+    Args:
+        df: DataFrame with 'compaction' and 'compaction_rating' columns
+    """
+    # Extract values
+    compaction_values = df['compaction'].values
+    compaction_ratings = df['compaction_rating'].values
     
     # Create side-by-side subplots
     fig, (left, right) = plt.subplots(1, 2, figsize=(12, 5))
@@ -20,6 +24,7 @@ def plot_compaction(genomic_windows: List[GenomicWindow]):
     left.grid(True, alpha=0.3)
     
     # Right plot: Bar chart of ratings (discrete values)
+    from collections import Counter
     rating_counts = Counter(compaction_ratings)
     ratings = sorted(rating_counts.keys())
     counts = [rating_counts[rating] for rating in ratings]

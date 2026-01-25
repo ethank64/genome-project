@@ -4,13 +4,18 @@ from visualization.compaction import plot_compaction
 from visualization.radial_position import plot_radial_position
 
 def main():
-        nuclear_profiles, genomic_windows = extract_data("./data.txt")
+        # Extract data into DataFrame
+        df = extract_data("./data.txt")
 
-        fill_in_radial_position(nuclear_profiles, len(genomic_windows), 1, 5)
-        fill_in_compaction(genomic_windows, len(nuclear_profiles), 1, 10)
+        # Calculate radial position ratings for each NP
+        np_info_df = fill_in_radial_position(df, 1, 5)
+        
+        # Calculate compaction ratings for each window (modifies df in place)
+        df = fill_in_compaction(df, 1, 10)
 
-        plot_radial_position(nuclear_profiles)
-        plot_compaction(genomic_windows)
+        # Plot visualizations
+        plot_radial_position(np_info_df)
+        plot_compaction(df)
         
 
         # results: AnalysisResult = analyze_data(nuclear_profiles, genomic_windows)

@@ -1,8 +1,10 @@
 from typing import Tuple, List
-from models import GenomicWindow, NP
+import pandas as pd
 
 
-def extract_data(file_path: str) -> Tuple[List[NP], List[GenomicWindow]]:
+# Takes the exact tabular structure in data.txt and represents it
+# as a pandas data frame
+def extract_data(file_path: str) -> pd.DataFrame:
     print("Parsing genomic window data...")
 
     with open(file_path, 'r') as data:
@@ -13,35 +15,38 @@ def extract_data(file_path: str) -> Tuple[List[NP], List[GenomicWindow]]:
         np_ids = first_line.split('\t')
         np_ids = np_ids[3:]  # Remove the first 3 (not NPs)
         
-        # Initialize master NP list with IDs
-        nuclear_profiles = init_nps(np_ids)
+        # Initialize lists to store data
+        starts = []
+        stops = []
+        np_data = {}
 
-        genomic_windows: List[GenomicWindow] = []
+        for np_id in np_ids:
+            np_data[np_id] = []
         
-        # For each row...
+        # For each row (genomic window)...
         for genomic_window in data:
             # Get a list of the window data for that row
             start, stop, window_data = parse_row(genomic_window)
-
-            # Track the np ids that show up for this genomic window
-            np_ids_for_window: List[str] = []
-
-            # For each column ('0' or '1')...
+            
+            starts.append(start)
+            stops.append(stop)
+            
+            # For each NP column ('0' or '1')...
             for i in range(len(window_data)):
                 result = window_data[i]
+                np_id = np_ids[i]
                 
-                # Update respective NP with window data from that row
-                if result == "0":
-                    nuclear_profiles[i].windows.append(False)
-                elif result == "1":
-                    nuclear_profiles[i].windows.append(True)
-                    
-                    # Add the NP ID only when the window was detected
-                    np_ids_for_window.append(nuclear_profiles[i].id)
-            
-            genomic_windows.append(GenomicWindow(start=start, stop=stop, NPs=np_ids_for_window))
-
-    return nuclear_profiles, genomic_windows
+                # Convert '0'/'1' to bool
+                np_data[np_id].append(result == "1")
+        
+        # Create DataFrame
+        df = pd.DataFrame({
+            'start': starts,
+            'stop': stops,
+            **np_data  # Unpack all NP columns
+        })
+        
+        return df
 
 # Takes a row from our data set and returns the start, stop, and list of window data ('0' or '1')
 def parse_row(window_row: str) -> Tuple[int, int, List[str]]:
@@ -55,13 +60,3 @@ def parse_row(window_row: str) -> Tuple[int, int, List[str]]:
     window_data = row[3:]  # Ignore position info
 
     return start, stop, window_data
-
-# Creates list of NPs with just their IDs
-def init_nps(np_ids: List[str]) -> List[NP]:
-    init_with_ids = []
-    
-    for np_id in np_ids:
-        np = NP(id=np_id, windows=[])
-        init_with_ids.append(np)
-    
-    return init_with_ids
