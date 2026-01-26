@@ -3,7 +3,7 @@ import pandas as pd
 
 
 # Takes the exact tabular structure in data.txt and represents it
-# as a pandas data frame
+# as a pandas data frame. Each row represents a genomic window
 def extract_data(file_path: str) -> pd.DataFrame:
     print("Parsing genomic window data...")
 
@@ -35,7 +35,7 @@ def extract_data(file_path: str) -> pd.DataFrame:
             for i in range(len(window_data)):
                 result = window_data[i]
                 np_id = np_ids[i]
-                
+
                 # Convert '0'/'1' to bool
                 np_data[np_id].append(result == "1")
         
