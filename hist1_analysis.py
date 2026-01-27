@@ -70,13 +70,11 @@ def analyze_hist1_radial_positions(np_info_df: pd.DataFrame, hist1_df: pd.DataFr
         percentage = (count / len(relevant_nps)) * 100
         print(f"Rating {rating}: {count} NPs ({percentage:.1f}%)")
     
-    print("\nMost common radial position(s):")
+    print("\nMost common radial position:")
 
     if radial_position_counts:
-        max_count = max(radial_position_counts.values())
-        most_common = [rating for rating, count in radial_position_counts.items() 
-                      if count == max_count]
-        print(f"  Rating(s) {most_common} with {max_count} NP(s)")
+        most_common_rating, count = radial_position_counts.most_common(1)[0]
+        print(f"  Rating {int(most_common_rating)} with {count} NP(s)")
     
     print("=" * 68)
     
@@ -106,13 +104,11 @@ def analyze_hist1_compactions(hist1_df: pd.DataFrame) -> Dict[int, int]:
         percentage = (count / len(compaction_ratings)) * 100
         print(f"Rating {rating}: {count} windows ({percentage:.1f}%)")
     
-    print("\nMost common compaction rating(s):")
+    print("\nMost common compaction rating:")
     
     if compaction_rating_counts:
-        max_count = max(compaction_rating_counts.values())
-        most_common = [rating for rating, count in compaction_rating_counts.items() 
-                      if count == max_count]
-        print(f"  Rating(s) {most_common} with {max_count} window(s)")
+        most_common_rating, count = compaction_rating_counts.most_common(1)[0]
+        print(f"  Rating {int(most_common_rating)} with {count} window(s)")
     
     print("=" * 68)
     
