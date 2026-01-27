@@ -11,7 +11,7 @@ def fill_in_radial_position(df: pd.DataFrame, min_rating: int, max_rating: int) 
     Returns a DataFrame with NP info: 'np_id', 'detection_frequency', 'radial_position_rating'
     """
     # Get NP columns (all columns except known non-NP columns)
-    known_non_np_columns = ['start', 'stop', 'compaction', 'compaction_rating']
+    known_non_np_columns = ['chrom', 'start', 'stop', 'compaction', 'compaction_rating']
     np_columns = [col for col in df.columns if col not in known_non_np_columns]
     total_genomic_windows = len(df)
     
@@ -50,7 +50,7 @@ def fill_in_compaction(df: pd.DataFrame, min_rating: int, max_rating: int) -> pd
     Returns the DataFrame with added 'compaction' and 'compaction_rating' columns.
     """
     # Get NP columns (all columns except known non-NP columns)
-    known_non_np_columns = ['start', 'stop', 'compaction', 'compaction_rating']
+    known_non_np_columns = ['chrom', 'start', 'stop', 'compaction', 'compaction_rating']
     np_columns = [col for col in df.columns if col not in known_non_np_columns]
     total_nps = len(np_columns)
     
@@ -100,7 +100,7 @@ def analyze_data(df: pd.DataFrame) -> AnalysisResult:
     average_nps_per_window, smallest_np_count, largest_np_count = analyze_genomic_windows(df)
 
     # Get NP columns to count total NPs
-    known_non_np_columns = ['start', 'stop', 'compaction', 'compaction_rating']
+    known_non_np_columns = ['chrom', 'start', 'stop', 'compaction', 'compaction_rating']
     np_columns = [col for col in df.columns if col not in known_non_np_columns]
 
     return AnalysisResult(
@@ -122,7 +122,7 @@ def analyze_nuclear_profiles(df: pd.DataFrame):
     Returns: (average_windows_per_np, smallest_window_count, largest_window_count)
     """
     # Filter out just the np_columns
-    non_np_columns: List[str] = ['start', 'stop', 'compaction', 'compaction_rating']
+    non_np_columns: List[str] = ['chrom', 'start', 'stop', 'compaction', 'compaction_rating']
     np_columns: List[str] = [col for col in df.columns if col not in non_np_columns]
     total_nps: int = len(np_columns)
     
@@ -144,7 +144,7 @@ def analyze_genomic_windows(df: pd.DataFrame):
     Returns: (average_nps_per_window, smallest_np_count, largest_np_count)
     """
     # Get NP columns (all columns except known non-NP columns)
-    known_non_np_columns = ['start', 'stop', 'compaction', 'compaction_rating']
+    known_non_np_columns = ['chrom', 'start', 'stop', 'compaction', 'compaction_rating']
     np_columns = [col for col in df.columns if col not in known_non_np_columns]
     
     total_windows = len(df)
