@@ -23,12 +23,6 @@ def main():
         # plot_radial_position(np_info_df)
         # plot_compaction(df)
         
-        # Hist1 Region Analysis
-        print("\n" + "=" * 68)
-        print("SINGLE-CELL ANALYSIS OF THE 3D TOPOLOGIES OF GENOMIC LOCI")
-        print("Hist1 Region Analysis (Chromosome 13: 21.7 Mb - 24.1 Mb)")
-        print("=" * 68)
-        
         # Extract Hist1 region
         hist1_df = extract_hist1_region(df)
         

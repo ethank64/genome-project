@@ -10,11 +10,11 @@ from utils import (
 # This should probably be more general, but it works for now
 # (running out of time lol)
 def extract_hist1_region(df: pd.DataFrame) -> pd.DataFrame:
-    # Filter for just chromosome 13
+    # Just grab the data from chromosome 13
     chr13_df = df[df['chrom'] == 'chr13'].copy()
     
     # Filter for the windows in the hist 1 region
-    hist1_df = chr13_df[(chr13_df['start'] < 24100000) & (chr13_df['stop'] > 21700000)].copy()
+    hist1_df = chr13_df[(chr13_df['start'] <= 24100000) & (chr13_df['stop'] >= 21700000)].copy()
     
     return hist1_df
 
@@ -36,10 +36,6 @@ def extract_relevant_nps(hist1_df: pd.DataFrame) -> List[str]:
 
 
 def analyze_hist1_statistics(hist1_df: pd.DataFrame) -> None:
-    print("\n" + "=" * 68)
-    print("HIST1 Region Stats")
-    print("=" * 68)
-    
     # Use activity 1 function to get the stats
     results = analyze_data(hist1_df)
     show_results(results)
@@ -57,7 +53,10 @@ def analyze_hist1_radial_positions(np_info_df: pd.DataFrame, hist1_df: pd.DataFr
     
     relevant_nps = extract_relevant_nps(hist1_df)
     
+    # Only looks at the relevant nps
     relevant_np_info = np_info_df[np_info_df['np_id'].isin(relevant_nps)]
+
+    # Track all of the discrete rp ratings in a dictionary
     radial_position_counts = Counter(relevant_np_info['radial_position_rating'].values)
     
     # Display results
@@ -74,7 +73,7 @@ def analyze_hist1_radial_positions(np_info_df: pd.DataFrame, hist1_df: pd.DataFr
 
     if radial_position_counts:
         most_common_rating, count = radial_position_counts.most_common(1)[0]
-        print(f"  Rating {int(most_common_rating)} with {count} NP(s)")
+        print(f"Rating {int(most_common_rating)} with {count} NPs")
     
     print("=" * 68)
     
@@ -108,7 +107,7 @@ def analyze_hist1_compactions(hist1_df: pd.DataFrame) -> Dict[int, int]:
     
     if compaction_rating_counts:
         most_common_rating, count = compaction_rating_counts.most_common(1)[0]
-        print(f"  Rating {int(most_common_rating)} with {count} window(s)")
+        print(f"Rating {int(most_common_rating)} with {count} windows")
     
     print("=" * 68)
     
