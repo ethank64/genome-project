@@ -1,13 +1,12 @@
 from data_parser import extract_data
 from utils import fill_in_compaction, fill_in_radial_position
-from visualization.compaction import plot_compaction
-from visualization.radial_position import plot_radial_position
-from hist1_analysis import (
+from subset_extraction import (
     extract_hist1_region,
-    analyze_hist1_statistics,
-    analyze_hist1_radial_positions,
-    analyze_hist1_compactions
+    extract_relevant_nps,
 )
+from typing import List
+from jaccard_utils import create_jaccard_similarity_matrix, create_jaccard_distance_matrix
+from visualization.jaccard import plot_jaccard_heatmap
 
 def main():
         # Extract data into DataFrame
@@ -25,15 +24,16 @@ def main():
         
         # Extract Hist1 region
         hist1_df = extract_hist1_region(df)
-        
-        # Analyze basic statistics
-        analyze_hist1_statistics(hist1_df)
-        
-        # Analyze radial positions (np_info_df already has radial positions calculated)
-        analyze_hist1_radial_positions(np_info_df, hist1_df)
-        
-        # Analyze compactions (hist1_df already has compactions since it was extracted from df)
-        analyze_hist1_compactions(hist1_df)
+        relevant_nps: List[str] = extract_relevant_nps(hist1_df)
+
+        similarity_matrix = create_jaccard_similarity_matrix(hist1_df, relevant_nps)
+        distance_matrix = create_jaccard_distance_matrix(hist1_df, relevant_nps)
+
+        plot_jaccard_heatmap(similarity_matrix, relevant_nps, "Jaccard Similarity Heatmap")
+        plot_jaccard_heatmap(distance_matrix, relevant_nps, "Jaccard Distance Heatmap")
+
+
+
 
 if __name__ == "__main__":
     main()
