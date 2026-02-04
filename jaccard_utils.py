@@ -75,3 +75,22 @@ def compute_jaccard_distance(np_data_1, np_data_2) -> float:
             denominator += 1
     
     return 1 - (matches / denominator)
+
+def compute_normalized_jaccard_distance(np_data_1, np_data_2) -> float:
+    matches = 0
+    np_data_1_count = 0
+    np_data_2_count = 0
+
+    for i in range(len(np_data_1)):
+        if np_data_1[i] and np_data_2[i]:
+            matches += 1
+
+        if np_data_1[i]:
+            np_data_1_count += 1
+
+        if np_data_2[i]:
+            np_data_2_count += 1
+        
+    denominator = min(np_data_1_count, np_data_2_count)
+
+    return 1 - (matches / denominator)
