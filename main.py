@@ -5,7 +5,7 @@ from subset_extraction import (
     extract_relevant_nps,
 )
 from typing import List
-from utils import create_2d_array, random_subset
+from utils import random_subset
 
 def main():
         # Extract data into DataFrame
@@ -23,30 +23,23 @@ def main():
 
         # Pick 3 random nps for initial clustering
         initial_clusters = random_subset(relevant_nps, 3)
-
-        clusters = create_2d_array(3)
-
         
-        for relevant_np in relevant_nps:
-            distances = []
+        clusters = {np_id: [] for np_id in initial_clusters}
 
-            # Calculate normalized distance
-            for cluster_np in initial_clusters:
-                np_data = hist1_df[relevant_np].tolist()
-                cluster_np_data = hist1_df[cluster_np].tolist()
-                distance = compute_normalized_jaccard_distance(np_data, cluster_np_data)
-                distances.append(distance)
-            
-            minimum_distance = min(distances)
-            cluster_index = distances.index(minimum_distance)
-            clusters[cluster_index].append(relevant_np)
+        while True:
+            for relevant_np in relevant_nps:
+                distances = []
 
-            
-        print(clusters[0])
-        print()
-        print(clusters[1])
-        print()
-        print(clusters[2])
+                # Calculate normalized distance
+                for cluster_np in initial_clusters:
+                    np_data = hist1_df[relevant_np].tolist()
+                    cluster_np_data = hist1_df[cluster_np].tolist()
+                    distance = compute_normalized_jaccard_distance(np_data, cluster_np_data)
+                    distances.append(distance)
+                
+                minimum_distance = min(distances)
+                cluster_index = distances.index(minimum_distance)
+                clusters[initial_clusters[cluster_index]].append(relevant_np)
             
 
 
