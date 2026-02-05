@@ -1,3 +1,4 @@
+import string
 from pydantic import BaseModel
 
 
@@ -10,3 +11,7 @@ class AnalysisResult(BaseModel):
     average_nps_per_window: float
     smallest_np_count: int
     largest_np_count: int
+
+class NPWithDistance(BaseModel):
+    np_id: str
+    distance: float
