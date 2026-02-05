@@ -47,7 +47,7 @@ def cluster_data(cluster_count: int, relevant_nps: List[str], region, max_iterat
         
         # Checks if the medoids are the same (order doesn't matter)
         if set(new_medoids) == set(medoids):
-            print("Medoids are the same after ", i, " iterations")
+            print("Medoids are the same after ", i + 1, " iterations")
             break
 
         medoids = new_medoids
@@ -57,6 +57,14 @@ def cluster_data(cluster_count: int, relevant_nps: List[str], region, max_iterat
 
 
 def find_new_best_medoid(current_medoid: str, cluster_nps: List[NPWithDistance], region):
+    # Handle empty clusters
+    if len(cluster_nps) == 0:
+        return current_medoid
+    
+    # Handle single-element clusters
+    if len(cluster_nps) == 1:
+        return cluster_nps[0].np_id
+    
     min_avg_distance = float("inf")
     best_medoid = current_medoid
 
@@ -71,11 +79,12 @@ def find_new_best_medoid(current_medoid: str, cluster_nps: List[NPWithDistance],
                 distance = compute_normalized_jaccard_distance(np_data, other_np_data)
                 distances.append(distance)
         
-        avg_distance = mean(distances)
+        if len(distances) > 0:
+            avg_distance = mean(distances)
 
-        if avg_distance < min_avg_distance:
-            min_avg_distance = avg_distance
-            best_medoid = np.np_id
+            if avg_distance < min_avg_distance:
+                min_avg_distance = avg_distance
+                best_medoid = np.np_id
 
     return best_medoid
 

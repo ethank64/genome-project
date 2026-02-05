@@ -17,7 +17,7 @@ def main():
         relevant_nps: List[str] = extract_relevant_nps(hist1_df)
 
         CLUSTER_COUNT = 3
-        MAX_CLUSTER_ITERATIONS = 2000
+        MAX_CLUSTER_ITERATIONS = 100
 
         # Pick 3 random nps for initial clustering
         clusters: Dict[str, List[NPWithDistance]] = cluster_data(CLUSTER_COUNT, relevant_nps, hist1_df, MAX_CLUSTER_ITERATIONS)
