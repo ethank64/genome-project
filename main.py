@@ -26,6 +26,7 @@ def main():
 
         clusters = create_2d_array(3)
 
+        
         for relevant_np in relevant_nps:
             distances = []
 
@@ -42,7 +43,9 @@ def main():
 
             
         print(clusters[0])
+        print()
         print(clusters[1])
+        print()
         print(clusters[2])
             
 
