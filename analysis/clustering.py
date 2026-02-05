@@ -11,7 +11,7 @@ def cluster_data(cluster_count: int, relevant_nps: List[str], region, max_iterat
     medoids = random_subset(relevant_nps, cluster_count)
     clusters: Dict[str, List[NPWithDistance]] = {}
 
-    for _ in range(max_iterations):
+    for i in range(max_iterations):
         # List is populated with a dict containing np id and distance
         clusters = {np_id: [] for np_id in medoids}
 
@@ -47,6 +47,7 @@ def cluster_data(cluster_count: int, relevant_nps: List[str], region, max_iterat
         
         # Checks if the medoids are the same (order doesn't matter)
         if set(new_medoids) == set(medoids):
+            print("Medoids are the same after ", i, " iterations")
             break
 
         medoids = new_medoids
@@ -77,3 +78,17 @@ def find_new_best_medoid(current_medoid: str, cluster_nps: List[NPWithDistance],
             best_medoid = np.np_id
 
     return best_medoid
+
+
+def asses_cluster_quality(cluster_data: Dict[str, List[NPWithDistance]]) -> float:
+    distances = []
+
+    for medoid in cluster_data.keys():
+        nps_with_distance: List[NPWithDistance] = cluster_data[medoid]
+
+        for np in nps_with_distance:
+            distances.append(np.distance)
+
+    return mean(distances)
+
+
