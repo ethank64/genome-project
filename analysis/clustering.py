@@ -15,11 +15,11 @@ def cluster_data(cluster_count: int, relevant_nps: List[str], region, max_iterat
         # List is populated with a dict containing np id and distance
         clusters = {np_id: [] for np_id in medoids}
 
+        # For all relevant NPs, find the distances between all the medoids
         for relevant_np in relevant_nps:
-            # Max 3 keys (for each medoid), scoped to a single relevant NP
             distances = {medoid_id: 0 for medoid_id in medoids}
 
-            # Calculate normalized distances to each cluster medoid
+            # Get normalized distances to each medoid
             for medoid_np in medoids:
                 # Get genomic window data
                 np_data = region[relevant_np].tolist()
@@ -31,21 +31,21 @@ def cluster_data(cluster_count: int, relevant_nps: List[str], region, max_iterat
             # Find the minimum distance
             minimum_distance = min(distances.values())
 
-            # Get the np id associated with the minimum distance
+            # Compare values & return key (np id)
             closest_cluster_np = min(distances, key=distances.get)
 
             # Add the relevant NP with its distance to its assigned cluster
             np_with_dist = NPWithDistance(np_id=relevant_np, distance=minimum_distance)
             clusters[closest_cluster_np].append(np_with_dist)
             
+        # Find the new best medoids
         new_medoids: List[str] = []
 
-        # Find the new best medoids
+        # For each old medoid...
         for medoid in clusters.keys():
             best_medoid = find_new_best_medoid(medoid, clusters[medoid], region)
             new_medoids.append(best_medoid)
         
-        # Checks if the medoids are the same (order doesn't matter)
         if set(new_medoids) == set(medoids):
             print("Medoids are the same after ", i + 1, " iterations")
             break
@@ -55,13 +55,12 @@ def cluster_data(cluster_count: int, relevant_nps: List[str], region, max_iterat
     return clusters
 
 
-
+# FInds the new best medoid by checking all NPs in the cluster to see which one
+# yields the lowest average distance
 def find_new_best_medoid(current_medoid: str, cluster_nps: List[NPWithDistance], region):
-    # Handle empty clusters
+    # Edge cases
     if len(cluster_nps) == 0:
         return current_medoid
-    
-    # Handle single-element clusters
     if len(cluster_nps) == 1:
         return cluster_nps[0].np_id
     
@@ -89,6 +88,7 @@ def find_new_best_medoid(current_medoid: str, cluster_nps: List[NPWithDistance],
     return best_medoid
 
 
+# Finds the average of all the distances
 def asses_cluster_quality(cluster_data: Dict[str, List[NPWithDistance]]) -> float:
     distances = []
 
