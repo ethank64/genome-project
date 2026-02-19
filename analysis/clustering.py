@@ -6,8 +6,6 @@ from utils import random_subset
 
 
 def cluster_data(cluster_count: int, relevant_nps: List[str], region, max_iterations: int) -> Dict[str, List[NPWithDistance]]:
-    print("Clustering data...")
-
     medoids = random_subset(relevant_nps, cluster_count)
     clusters: Dict[str, List[NPWithDistance]] = {}
 
@@ -47,7 +45,6 @@ def cluster_data(cluster_count: int, relevant_nps: List[str], region, max_iterat
             new_medoids.append(best_medoid)
         
         if set(new_medoids) == set(medoids):
-            print("Medoids are the same after ", i + 1, " iterations")
             break
 
         medoids = new_medoids
