@@ -25,9 +25,11 @@ def main():
 
         cluster_ids = clusters.keys()
 
-        print("NPs used for final clusters:")
+        print("Cluster data:")
         for id in cluster_ids:
             print(id)
+            np_ids = [np.np_id for np in clusters[id]]
+            print(np_ids, "\n")
 
         print()
         print("Cluster quality (closer to zero is good): ", cluster_quality)
