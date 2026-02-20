@@ -12,10 +12,8 @@ from visualization.clusters import visualize_cluster_heatmaps
 
 
 def main():
-        # Extract data into DataFrame
         df = extract_data("./data.txt")
         
-        # Extract Hist1 region
         hist1_df = extract_hist1_region(df)
         relevant_nps: List[str] = extract_relevant_nps(hist1_df)
 
@@ -24,7 +22,7 @@ def main():
 
         cluster_sets: List[ClusterSet] = []
 
-        for _ in range(5):
+        for _ in range(50):
             clusters: Dict[str, List[NPWithDistance]] = cluster_data(CLUSTER_COUNT, relevant_nps, hist1_df, MAX_CLUSTER_ITERATIONS)
             cluster_quality = asses_cluster_quality(clusters)
 
@@ -38,7 +36,6 @@ def main():
         print(f"Best cluster set quality: {best_cluster_set.quality}")
         print(f"Number of clusters: {len(best_cluster_set.clusters)}")
         
-        # Visualize each cluster as a heatmap
         visualize_cluster_heatmaps(best_cluster_set, hist1_df)
 
 
