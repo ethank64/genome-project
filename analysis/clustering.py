@@ -1,13 +1,14 @@
 from statistics import mean
 from typing import Dict, List
-from models import NPWithDistance
+from models import NP
 from jaccard_utils import compute_normalized_jaccard_distance
 from utils import random_subset
+from models import ClusterSet
 
 
-def cluster_data(cluster_count: int, relevant_nps: List[str], region, max_iterations: int) -> Dict[str, List[NPWithDistance]]:
+def cluster_data(cluster_count: int, relevant_nps: List[str], region, max_iterations: int) -> Dict[str, List[NP]]:
     medoids = random_subset(relevant_nps, cluster_count)
-    clusters: Dict[str, List[NPWithDistance]] = {}
+    clusters: Dict[str, List[NP]] = {}
 
     for i in range(max_iterations):
         # List is populated with a dict containing np id and distance
@@ -33,7 +34,7 @@ def cluster_data(cluster_count: int, relevant_nps: List[str], region, max_iterat
             closest_cluster_np = min(distances, key=distances.get)
 
             # Add the relevant NP with its distance to its assigned cluster
-            np_with_dist = NPWithDistance(np_id=relevant_np, distance=minimum_distance)
+            np_with_dist = NP(np_id=relevant_np, distance=minimum_distance)
             clusters[closest_cluster_np].append(np_with_dist)
             
         # Find the new best medoids
@@ -54,7 +55,7 @@ def cluster_data(cluster_count: int, relevant_nps: List[str], region, max_iterat
 
 # FInds the new best medoid by checking all NPs in the cluster to see which one
 # yields the lowest average distance
-def find_new_best_medoid(current_medoid: str, cluster_nps: List[NPWithDistance], region):
+def find_new_best_medoid(current_medoid: str, cluster_nps: List[NP], region):
     # Edge cases
     if len(cluster_nps) == 0:
         return current_medoid
@@ -86,11 +87,11 @@ def find_new_best_medoid(current_medoid: str, cluster_nps: List[NPWithDistance],
 
 
 # Finds the average of all the distances
-def asses_cluster_quality(cluster_data: Dict[str, List[NPWithDistance]]) -> float:
+def asses_cluster_quality(cluster_data: Dict[str, List[NP]]) -> float:
     distances = []
 
     for medoid in cluster_data.keys():
-        nps_with_distance: List[NPWithDistance] = cluster_data[medoid]
+        nps_with_distance: List[NP] = cluster_data[medoid]
 
         for np in nps_with_distance:
             distances.append(np.distance)
@@ -98,3 +99,15 @@ def asses_cluster_quality(cluster_data: Dict[str, List[NPWithDistance]]) -> floa
     return mean(distances)
 
 
+def find_best_cluster_set(cluster_sets: List[ClusterSet]):
+    best_quality = 1
+    best_index = -1
+
+    for i in range(len(cluster_sets)):
+        quality = cluster_sets[i].quality
+
+        if quality < best_quality:
+            best_quality = quality
+            best_index = i
+    
+    return cluster_sets[best_index]

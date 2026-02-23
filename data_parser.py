@@ -2,8 +2,12 @@ from typing import Tuple, List
 import pandas as pd
 
 
-# Takes the exact tabular structure in data.txt and represents it
-# as a pandas data frame. Each row represents a genomic window
+def extract_features(file_path: str) -> pd.DataFrame:
+    print("Extracting features...")
+    df = pd.read_csv(file_path)
+    return df
+
+
 def extract_data(file_path: str) -> pd.DataFrame:
     print("Parsing genomic window data...")
 
