@@ -8,6 +8,7 @@ class NP(BaseModel):
     distance: float
 
 
+
 # Just a group of k clusters
 class ClusterSet(BaseModel):
     clusters: Dict[str, List[NP]]
