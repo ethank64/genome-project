@@ -35,26 +35,18 @@ def create_2d_array(cols: int) -> List[List]:
     return array
 
 
-# DF is basically how often windows showed up / total windows
+
 def fill_in_radial_position(df: pd.DataFrame, min_rating: int, max_rating: int) -> pd.DataFrame:
-    """
-    Calculate detection frequency and radial position rating for each NP.
-    
-    Returns a DataFrame with NP info: 'np_id', 'detection_frequency', 'radial_position_rating'
-    """
-    # Get NP columns (all columns except known non-NP columns)
     known_non_np_columns = ['chrom', 'start', 'stop', 'compaction', 'compaction_rating']
     np_columns = [col for col in df.columns if col not in known_non_np_columns]
     total_genomic_windows = len(df)
     
-    # Calculate detection frequencies for each NP
     detection_frequencies = {}
     for np_id in np_columns:
         # Sum of True values / total windows
         detection_freq = df[np_id].sum() / total_genomic_windows
         detection_frequencies[np_id] = detection_freq
     
-    # Find min and max detection frequencies
     freq_values = list(detection_frequencies.values())
     data_min = min(freq_values)
     data_max = max(freq_values)
@@ -74,20 +66,13 @@ def fill_in_radial_position(df: pd.DataFrame, min_rating: int, max_rating: int) 
     
     return np_info_df
 
-# Compaction is basically the inverse of how spread out it is (which is the ratio of found / total)
+
+
 def fill_in_compaction(df: pd.DataFrame, min_rating: int, max_rating: int) -> pd.DataFrame:
-    """
-    Calculate compaction and compaction rating for each genomic window.
-    
-    Returns the DataFrame with added 'compaction' and 'compaction_rating' columns.
-    """
-    # Get NP columns (all columns except known non-NP columns)
     known_non_np_columns = ['chrom', 'start', 'stop', 'compaction', 'compaction_rating']
     np_columns = [col for col in df.columns if col not in known_non_np_columns]
     total_nps = len(np_columns)
     
-    # Calculate compaction for each window (row)
-    # Compaction = 1 - (number of NPs where window was detected / total NPs)
     df['compaction'] = 1 - df[np_columns].sum(axis=1) / total_nps
     
     # Hard-coded. Probably not the best, but otherwise we get weird numbers
