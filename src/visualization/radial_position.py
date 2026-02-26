@@ -48,5 +48,5 @@ def plot_radial_position(np_info_df: pd.DataFrame, medoid_id: str):
     
     plt.tight_layout()
     GRAPHS_DIR.mkdir(parents=True, exist_ok=True)
-    file_name = "radial_position_ratings_" + medoid_id
+    file_name = "radial_positions_" + medoid_id
     plt.savefig(GRAPHS_DIR / file_name, dpi=300)

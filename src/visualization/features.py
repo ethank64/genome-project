@@ -6,6 +6,9 @@ from typing import Dict, List
 from constants import GRAPHS_DIR
 
 
+def plot_radar():
+    pass
+
 def plot_feature_boxplots(hist1_ratios: Dict[str, List[float]], lad_ratios: Dict[str, List[float]]):
     medoids = list(hist1_ratios.keys())
 
