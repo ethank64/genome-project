@@ -1,7 +1,10 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
+from pathlib import Path
 from typing import Dict, List
+
+GRAPHS_DIR = Path("./graphs")
 
 
 def plot_feature_boxplots(hist1_ratios: Dict[str, List[float]], lad_ratios: Dict[str, List[float]]):
@@ -30,11 +33,12 @@ def plot_feature_boxplots(hist1_ratios: Dict[str, List[float]], lad_ratios: Dict
     sns.stripplot(data=hist1_df, x="cluster", y="percentage", color="black", size=3, ax=ax1)
     ax1.set_xlabel("Cluster")
     ax1.set_ylabel("Percentage of windows in an NP that contain histone genes")
-    plt.savefig("boxplot_hist1_feature", dpi=300)
+    GRAPHS_DIR.mkdir(parents=True, exist_ok=True)
+    plt.savefig(GRAPHS_DIR / "boxplot_hist1_feature.png", dpi=300)
 
     fig2, ax2 = plt.subplots(figsize=(6, 5))
     sns.boxplot(data=lad_df, x="cluster", y="percentage", ax=ax2)
     sns.stripplot(data=lad_df, x="cluster", y="percentage", color="black", size=3, ax=ax2)
     ax2.set_xlabel("Cluster")
     ax2.set_ylabel("Percentage of windows in an NP that contain LADs")
-    plt.savefig("boxplot_lad_feature", dpi=300)
+    plt.savefig(GRAPHS_DIR / "boxplot_lad_feature.png", dpi=300)

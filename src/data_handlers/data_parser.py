@@ -42,15 +42,13 @@ def extract_data(file_path: str) -> pd.DataFrame:
                 result = window_data[i]
                 np_id = np_ids[i]
 
-                # Convert '0'/'1' to bool
                 np_data[np_id].append(result == "1")
         
-        # Create DataFrame
         df = pd.DataFrame({
             'chrom': chromosomes,
             'start': starts,
             'stop': stops,
-            **np_data  # Unpack all NP columns
+            **np_data
         })
         
         return df

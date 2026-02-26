@@ -1,9 +1,24 @@
 from statistics import mean
 from typing import Dict, List
 from models import NP
-from jaccard_utils import compute_normalized_jaccard_distance
+from .jaccard import compute_normalized_jaccard_distance
 from utils import random_subset
 from models import ClusterSet
+
+
+def iterate_clusters(relevant_nps, region, cluster_set_count, max_iterations = 100, cluster_size = 3) -> List[ClusterSet]:
+    cluster_sets: List[ClusterSet] = []
+
+    for _ in range(10):
+        clusters: Dict[str, List[NP]] = cluster_data(cluster_size, relevant_nps, region, max_iterations)
+        cluster_quality = asses_cluster_quality(clusters)
+
+        cluster_sets.append(ClusterSet(
+            clusters=clusters,
+            quality=cluster_quality
+        ))
+
+    return cluster_sets
 
 
 def cluster_data(cluster_count: int, relevant_nps: List[str], region, max_iterations: int) -> Dict[str, List[NP]]:

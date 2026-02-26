@@ -1,19 +1,18 @@
-from pyexpat import features
-from statistics import mean
 from typing import Dict, List
-from analysis.clustering import asses_cluster_quality, cluster_data
-from data_parser import extract_data, extract_features
-from subset_extraction import (
+from analysis.clustering import iterate_clusters
+from data_handlers.data_parser import extract_data, extract_features
+from data_handlers.subset_extraction import (
     extract_hist1_region,
     extract_relevant_nps,
 )
 from models import ClusterSet, NP
 from analysis.clustering import find_best_cluster_set
-from utils import fill_in_radial_position
-from visualization.clusters import visualize_cluster_heatmaps
+from analysis.radial_position import fill_in_radial_position
 from visualization.features import plot_feature_boxplots
-from visualization.radial_position import plot_cluster_radial_positions, plot_radial_position
+from visualization.radial_position import plot_cluster_radial_positions
 
+
+FEATURES = ["Hist1", "Vmn", "LAD", "RNAPII-S2P", "RNAPII-S5P", "RNAPII-S7P", "enhancer", "H3K9me3", "H3K20me3", "H3K27me3", "H3K36me3", "NANOG", "pou5f1", "sox2", "CTCF"]
 
 def main():
     df = extract_data("./data/data.txt")
@@ -22,20 +21,7 @@ def main():
     hist1_df = extract_hist1_region(df)
     relevant_nps: List[str] = extract_relevant_nps(hist1_df)
 
-    CLUSTER_COUNT = 3
-    MAX_CLUSTER_ITERATIONS = 100
-
-    cluster_sets: List[ClusterSet] = []
-
-    for _ in range(10):
-        clusters: Dict[str, List[NP]] = cluster_data(CLUSTER_COUNT, relevant_nps, hist1_df, MAX_CLUSTER_ITERATIONS)
-        cluster_quality = asses_cluster_quality(clusters)
-
-        cluster_sets.append(ClusterSet(
-            clusters=clusters,
-            quality=cluster_quality
-        ))
-
+    cluster_sets: List[ClusterSet] = iterate_clusters(relevant_nps, hist1_df, 10)
     best_cluster_set: ClusterSet = find_best_cluster_set(cluster_sets)
 
     clusters: Dict[str, List[NP]] = best_cluster_set.clusters

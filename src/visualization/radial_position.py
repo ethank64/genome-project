@@ -1,12 +1,11 @@
-from math import floor
-from random import random
+from pathlib import Path
 import matplotlib.pyplot as plt
 from models import NP, ClusterSet
 import pandas as pd
-import numpy as np
 from typing import List
+from analysis.radial_position import fill_in_radial_position
 
-from utils import fill_in_radial_position
+GRAPHS_DIR = Path("./graphs")
 
 def plot_cluster_radial_positions(cluster_set: ClusterSet, region: pd.DataFrame):
     clusters = cluster_set.clusters
@@ -50,4 +49,5 @@ def plot_radial_position(np_info_df: pd.DataFrame, medoid_id: str):
     right.grid(True, alpha=0.3, axis='y')
     
     plt.tight_layout()
-    plt.savefig("radial_position_ratings_" + medoid_id, dpi=300)
+    file_name = "radial_position_ratings_" + medoid_id
+    plt.savefig(GRAPHS_DIR / file_name, dpi=300)
