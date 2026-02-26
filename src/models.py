@@ -1,10 +1,9 @@
 from typing import Dict, List
-import string
 from pydantic import BaseModel
 
 
 class NP(BaseModel):
-    np_id: str
+    id: str
     distance: float
 
 # Just a group of k clusters

@@ -8,7 +8,8 @@ from data_handlers.subset_extraction import (
 from models import ClusterSet, NP
 from analysis.clustering import find_best_cluster_set
 from analysis.radial_position import fill_in_radial_position
-from visualization.features import plot_feature_boxplots
+from analysis.features import get_cluster_set_feature_correlations
+from visualization.features import plot_feature_boxplots, plot_feature_radar
 from visualization.radial_position import plot_cluster_radial_positions
 
 
@@ -23,50 +24,8 @@ def main():
     cluster_sets: List[ClusterSet] = iterate_clusters(relevant_nps, hist1_df, 10)
     best_cluster_set: ClusterSet = find_best_cluster_set(cluster_sets)
 
-    clusters: Dict[str, List[NP]] = best_cluster_set.clusters
-
-    hist1_feature_data = features_df["Hist1"].to_list()
-    lad_feature_data = features_df["LAD"].to_list()
-
-    hist1_feature_ratios: Dict[str, List[float]] = {}
-    lad_feature_ratios: Dict[str, List[float]] = {}
-
-    for medoid in clusters:
-        cluster: List[NP] = clusters[medoid]
-
-        local_hist1_ratios: List[float] = []
-        local_lad_ratios: List[float] = []
-
-        for np in cluster:
-            np_window_data = hist1_df[np.np_id].to_list()
-
-            total_windows = 0
-            hist1_matches = 0
-            lad_matches = 0
-
-            for i in range(len(np_window_data)):
-                if np_window_data[i]:
-                    total_windows += 1
-
-                if np_window_data[i] and np_window_data[i] == hist1_feature_data[i]:
-                    hist1_matches += 1
-
-                if np_window_data[i] and np_window_data[i] == lad_feature_data[i]:
-                    lad_matches += 1
-
-            hist1_percentage = hist1_matches / total_windows
-            lad_percentage = lad_matches / total_windows
-
-            local_hist1_ratios.append(hist1_percentage)
-            local_lad_ratios.append(lad_percentage)
-        
-        hist1_feature_ratios[medoid] = local_hist1_ratios
-        lad_feature_ratios[medoid] = local_lad_ratios
-
-    plot_feature_boxplots(hist1_feature_ratios, lad_feature_ratios)
-
-    radial_position_df = fill_in_radial_position(hist1_df, 1, 5)
-    plot_cluster_radial_positions(best_cluster_set, hist1_df)
+    feature_correlations = get_cluster_set_feature_correlations(best_cluster_set, hist1_df, features_df)
+    plot_feature_radar(feature_correlations)
 
 
 if __name__ == "__main__":

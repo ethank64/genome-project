@@ -2,12 +2,37 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 from typing import Dict, List
+import numpy as np
 
 from constants import GRAPHS_DIR
 
 
-def plot_radar():
-    pass
+def plot_feature_radar(cluster_set_feature_correlations: Dict[str, Dict[str, float]]):
+    for medoid in cluster_set_feature_correlations:
+        cluster_feature_correlations: Dict[str, float] = cluster_set_feature_correlations[medoid]
+
+        feature_labels = list(cluster_feature_correlations.keys())
+        ratios = list(cluster_feature_correlations.values())
+
+        angles = np.linspace(0, 2 * np.pi, len(feature_labels), endpoint=False).tolist()
+
+        angles_closed = angles + angles[:1]
+        ratios_closed = ratios + ratios[:1]
+
+        fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
+
+        ax.plot(angles_closed, ratios_closed, linewidth=2)
+        ax.fill(angles_closed, ratios_closed, alpha=0.25)
+
+        ax.set_xticks(angles)
+        ax.set_xticklabels(feature_labels)
+
+        ax.set_title("Feature Ratios for " + medoid + " Cluster")
+        ax.set_ylim(0, 1)
+
+        file_name = "feature_ratios_" + medoid
+        plt.savefig(GRAPHS_DIR / file_name, dpi=300)
+
 
 def plot_feature_boxplots(hist1_ratios: Dict[str, List[float]], lad_ratios: Dict[str, List[float]]):
     medoids = list(hist1_ratios.keys())

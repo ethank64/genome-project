@@ -49,7 +49,7 @@ def cluster_data(cluster_count: int, relevant_nps: List[str], region, max_iterat
             closest_cluster_np = min(distances, key=distances.get)
 
             # Add the relevant NP with its distance to its assigned cluster
-            np_with_dist = NP(np_id=relevant_np, distance=minimum_distance)
+            np_with_dist = NP(id=relevant_np, distance=minimum_distance)
             clusters[closest_cluster_np].append(np_with_dist)
             
         # Find the new best medoids
@@ -75,7 +75,7 @@ def find_new_best_medoid(current_medoid: str, cluster_nps: List[NP], region):
     if len(cluster_nps) == 0:
         return current_medoid
     if len(cluster_nps) == 1:
-        return cluster_nps[0].np_id
+        return cluster_nps[0].id
     
     min_avg_distance = float("inf")
     best_medoid = current_medoid
@@ -85,9 +85,9 @@ def find_new_best_medoid(current_medoid: str, cluster_nps: List[NP], region):
 
         # Find all of the J distances from the current to every other
         for other_np in cluster_nps:
-            if np.np_id != other_np.np_id:
-                np_data = region[np.np_id].tolist()
-                other_np_data = region[other_np.np_id].tolist()
+            if np.id != other_np.id:
+                np_data = region[np.id].tolist()
+                other_np_data = region[other_np.id].tolist()
                 distance = compute_normalized_jaccard_distance(np_data, other_np_data)
                 distances.append(distance)
         
@@ -96,7 +96,7 @@ def find_new_best_medoid(current_medoid: str, cluster_nps: List[NP], region):
 
             if avg_distance < min_avg_distance:
                 min_avg_distance = avg_distance
-                best_medoid = np.np_id
+                best_medoid = np.id
 
     return best_medoid
 

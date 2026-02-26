@@ -1,11 +1,13 @@
 from typing import Tuple, List
 import pandas as pd
+from constants import FEATURES
 
 
 def extract_features(file_path: str) -> pd.DataFrame:
     print("Extracting features...")
     df = pd.read_csv(file_path)
-    return df
+    relevant_features_df = df[FEATURES]
+    return relevant_features_df
 
 
 def extract_data(file_path: str) -> pd.DataFrame:

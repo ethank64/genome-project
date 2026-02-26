@@ -10,7 +10,7 @@ def visualize_cluster_heatmaps(cluster_set: ClusterSet, region_df: pd.DataFrame)
     cluster_set_data = cluster_set.clusters.items()
 
     for medoid_id, cluster_nps in cluster_set_data:
-        np_ids = [np.np_id for np in cluster_nps]
+        np_ids = [np.id for np in cluster_nps]
         np_ids_in_cluster = [medoid_id]
         np_ids_in_cluster.extend(np_ids)
 

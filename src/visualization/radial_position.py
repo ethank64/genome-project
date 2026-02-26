@@ -10,7 +10,7 @@ def plot_cluster_radial_positions(cluster_set: ClusterSet, region: pd.DataFrame)
 
     for medoid in clusters:
         nps: List[NP] = clusters[medoid]
-        np_ids: List[str] = [np.np_id for np in nps]
+        np_ids: List[str] = [np.id for np in nps]
 
         cluster_subset = region[np_ids]
 
