@@ -8,9 +8,6 @@ def fill_in_compaction(df: pd.DataFrame, min_rating: int, max_rating: int) -> pd
     
     df['compaction'] = 1 - df[np_columns].sum(axis=1) / total_nps
     
-    # Hard-coded. Probably not the best, but otherwise we get weird numbers
-    # I got this from looking at the raw compaction data. Seems like there's some
-    # extreme outliers past this value to the left
     data_min = 0.853
     data_max = df['compaction'].max()
     

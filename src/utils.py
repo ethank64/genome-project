@@ -2,6 +2,7 @@ from typing import List
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 # Implements p5.js's map function to take a value from one range to another
@@ -51,5 +52,16 @@ def plot_radar(labels, values, title, save_dir):
 
     ax.set_title(title)
     ax.set_ylim(0, 1)
+
+    plt.savefig(save_dir, dpi=300)
+
+def boxplot(df, x_title, y_title, x_col, y_col, save_dir):
+    fig1, ax = plt.subplots(figsize=(6, 5))
+
+    sns.boxplot(data=df, x=x_col, y=y_col, ax=ax)
+    sns.stripplot(data=df, x=x_col, y=y_col, color="black", size=3, ax=ax)
+
+    ax.set_xlabel(x_title)
+    ax.set_ylabel(y_title)
 
     plt.savefig(save_dir, dpi=300)

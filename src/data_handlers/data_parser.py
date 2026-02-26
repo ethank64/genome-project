@@ -21,7 +21,6 @@ def extract_data(file_path: str) -> pd.DataFrame:
         np_ids = first_line.split('\t')
         np_ids = np_ids[3:]  # Remove the first 3 (not NPs)
         
-        # Initialize lists to store data
         chromosomes = []
         starts = []
         stops = []

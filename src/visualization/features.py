@@ -3,7 +3,7 @@ import seaborn as sns
 import pandas as pd
 from typing import Dict, List
 import numpy as np
-from utils import plot_radar
+from utils import plot_radar, boxplot
 
 from constants import GRAPHS_DIR
 
@@ -15,45 +15,27 @@ def plot_feature_radar(cluster_set_feature_correlations: Dict[str, Dict[str, flo
         feature_labels = list(cluster_feature_correlations.keys())
         ratios = list(cluster_feature_correlations.values())
 
-        radar_title = "Feature Ratios for " + medoid + " Cluster"
+        title = "Feature Ratios for " + medoid + " Cluster"
         file_name = "feature_ratios_" + medoid
         save_path = GRAPHS_DIR / file_name
 
-        plot_radar(feature_labels, ratios, radar_title, save_path)
+        plot_radar(feature_labels, ratios, title, save_path)
 
 
-def plot_feature_boxplots(hist1_ratios: Dict[str, List[float]], lad_ratios: Dict[str, List[float]]):
-    medoids = list(hist1_ratios.keys())
+def plot_feature_boxplot(cluster_set_ratios: Dict[str, List[float]], feature_id: str):
+    medoids = list(cluster_set_ratios.keys())
 
-    hist1_rows = []
+    rows = []
     for i, medoid in enumerate(medoids):
         label = f"Cluster {i + 1} ({medoid})"
 
-        for percentage in hist1_ratios[medoid]:
-            hist1_rows.append({"cluster": label, "percentage": percentage * 100})
+        for percentage in cluster_set_ratios[medoid]:
+            rows.append({"cluster": label, "percentage": percentage * 100})
 
-    hist1_df = pd.DataFrame(hist1_rows)
+    feature_df = pd.DataFrame(rows)
+    
+    x_title = "Cluster"
+    y_title = f"Percentage of windows that contain {feature_id}"
+    save_path = GRAPHS_DIR / f"boxplot_{feature_id}_feature.png"
+    boxplot(feature_df, x_title, y_title, "cluster", "percentage", save_path)
 
-    lad_rows = []
-    for i, medoid in enumerate(medoids):
-        label = f"Cluster {i + 1} ({medoid})"
-
-        for percentage in lad_ratios[medoid]:
-            lad_rows.append({"cluster": label, "percentage": percentage * 100})
-
-    lad_df = pd.DataFrame(lad_rows)
-
-    fig1, ax1 = plt.subplots(figsize=(6, 5))
-    sns.boxplot(data=hist1_df, x="cluster", y="percentage", ax=ax1)
-    sns.stripplot(data=hist1_df, x="cluster", y="percentage", color="black", size=3, ax=ax1)
-    ax1.set_xlabel("Cluster")
-    ax1.set_ylabel("Percentage of windows in an NP that contain histone genes")
-    GRAPHS_DIR.mkdir(parents=True, exist_ok=True)
-    plt.savefig(GRAPHS_DIR / "boxplot_hist1_feature.png", dpi=300)
-
-    fig2, ax2 = plt.subplots(figsize=(6, 5))
-    sns.boxplot(data=lad_df, x="cluster", y="percentage", ax=ax2)
-    sns.stripplot(data=lad_df, x="cluster", y="percentage", color="black", size=3, ax=ax2)
-    ax2.set_xlabel("Cluster")
-    ax2.set_ylabel("Percentage of windows in an NP that contain LADs")
-    plt.savefig(GRAPHS_DIR / "boxplot_lad_feature.png", dpi=300)

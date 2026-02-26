@@ -1,12 +1,18 @@
+from statistics import mean
 from typing import Dict, List
 from models import NP, ClusterSet
 
 
 def get_cluster_feature_correlations(cluster: List[NP], region_df, features_df) -> Dict[str, float]:
-    cluster_feature_correlations = {}
+    cluster_feature_correlations: Dict[str, float] = {}
 
     for np in cluster:
         np_window_data = region_df[np.id].to_list()
+
+        all_feature_correlations: Dict[str, List[float]] = {}
+
+        for feature_id in features_df:
+            all_feature_correlations[feature_id] = []
 
         for feature_id, feature_data in features_df.items():
             total_windows = 0
@@ -20,7 +26,11 @@ def get_cluster_feature_correlations(cluster: List[NP], region_df, features_df) 
                     feature_matches += 1
             
             feature_ratio = feature_matches / total_windows
-            cluster_feature_correlations[feature_id] = feature_ratio
+            all_feature_correlations[feature_id].append(feature_ratio)
+
+        for feature_id in all_feature_correlations:
+            average = mean(all_feature_correlations[feature_id])
+            cluster_feature_correlations[feature_id] = average
 
     return cluster_feature_correlations
 
@@ -35,5 +45,39 @@ def get_cluster_set_feature_correlations(cluster_set: ClusterSet, region_df, fea
         cluster_set_correlations[medoid] = get_cluster_feature_correlations(cluster, region_df, features_df)
 
     return cluster_set_correlations
+
+
+def extract_feature_ratios(cluster_set: ClusterSet, region_df, features_df, feature_id) -> Dict[str, List[float]]:
+    cluster_set_ratios = {}
+
+    clusters: Dict[str, List[NP]] = cluster_set.clusters
+
+    feature_data = features_df[feature_id].to_list()
+
+    for medoid in clusters:
+        ratios = []
+
+        cluster: List[NP] = clusters[medoid]
+
+        for np in cluster:
+            
+            window_data = region_df[np.id].to_list()
+
+            total_windows = 0
+            feature_matches = 0
+
+            for i in range(len(window_data)):
+                if window_data[i]:
+                    total_windows += 1
+
+                if window_data[i] and window_data[i] == feature_data[i]:
+                    feature_matches += 1
+        
+            ratio = feature_matches / total_windows
+            ratios.append(ratio)
+        
+        cluster_set_ratios[medoid] = ratios
+
+    return cluster_set_ratios
 
         
