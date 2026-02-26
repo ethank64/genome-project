@@ -43,8 +43,15 @@ def fill_in_radial_position(df: pd.DataFrame, min_rating: int, max_rating: int) 
     
     detection_frequencies = {}
     for np_id in np_columns:
-        # Sum of True values / total windows
-        detection_freq = df[np_id].sum() / total_genomic_windows
+        data = df[np_id].to_list()
+
+        total_matches = 0
+
+        for window in data:
+            if window:
+                total_matches += 1
+
+        detection_freq = total_matches / total_genomic_windows
         detection_frequencies[np_id] = detection_freq
     
     freq_values = list(detection_frequencies.values())

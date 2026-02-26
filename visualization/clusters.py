@@ -57,5 +57,4 @@ def plot_single_cluster_heatmap(matrix: np.ndarray, medoid_id: str, cluster_size
     plt.tight_layout()
     plt.subplots_adjust(bottom=0.1)
     plt.savefig("medoid_cluster_" + medoid_id, dpi=300)
-    plt.show()
 

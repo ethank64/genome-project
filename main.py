@@ -10,7 +10,9 @@ from subset_extraction import (
 from models import ClusterSet, NP
 from analysis.clustering import find_best_cluster_set
 from utils import fill_in_radial_position
+from visualization.clusters import visualize_cluster_heatmaps
 from visualization.features import plot_feature_boxplots
+from visualization.radial_position import plot_cluster_radial_positions, plot_radial_position
 
 
 def main():
@@ -25,7 +27,7 @@ def main():
 
     cluster_sets: List[ClusterSet] = []
 
-    for _ in range(1):
+    for _ in range(10):
         clusters: Dict[str, List[NP]] = cluster_data(CLUSTER_COUNT, relevant_nps, hist1_df, MAX_CLUSTER_ITERATIONS)
         cluster_quality = asses_cluster_quality(clusters)
 
@@ -78,13 +80,8 @@ def main():
 
     plot_feature_boxplots(hist1_feature_ratios, lad_feature_ratios)
 
-
     radial_position_df = fill_in_radial_position(hist1_df, 1, 5)
-
-    print(radial_position_df)
-
-
-
+    plot_cluster_radial_positions(best_cluster_set, hist1_df)
 
 
 if __name__ == "__main__":

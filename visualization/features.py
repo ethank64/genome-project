@@ -9,7 +9,7 @@ def plot_feature_boxplots(hist1_ratios: Dict[str, List[float]], lad_ratios: Dict
 
     hist1_rows = []
     for i, medoid in enumerate(medoids):
-        label = f"Cluster {i + 1}"
+        label = f"Cluster {i + 1} ({medoid})"
 
         for percentage in hist1_ratios[medoid]:
             hist1_rows.append({"cluster": label, "percentage": percentage * 100})
@@ -18,7 +18,7 @@ def plot_feature_boxplots(hist1_ratios: Dict[str, List[float]], lad_ratios: Dict
 
     lad_rows = []
     for i, medoid in enumerate(medoids):
-        label = f"Cluster {i + 1}"
+        label = f"Cluster {i + 1} ({medoid})"
 
         for percentage in lad_ratios[medoid]:
             lad_rows.append({"cluster": label, "percentage": percentage * 100})
@@ -30,11 +30,11 @@ def plot_feature_boxplots(hist1_ratios: Dict[str, List[float]], lad_ratios: Dict
     sns.stripplot(data=hist1_df, x="cluster", y="percentage", color="black", size=3, ax=ax1)
     ax1.set_xlabel("Cluster")
     ax1.set_ylabel("Percentage of windows in an NP that contain histone genes")
-    plt.show()
+    plt.savefig("boxplot_hist1_feature", dpi=300)
 
     fig2, ax2 = plt.subplots(figsize=(6, 5))
     sns.boxplot(data=lad_df, x="cluster", y="percentage", ax=ax2)
     sns.stripplot(data=lad_df, x="cluster", y="percentage", color="black", size=3, ax=ax2)
     ax2.set_xlabel("Cluster")
     ax2.set_ylabel("Percentage of windows in an NP that contain LADs")
-    plt.show()
+    plt.savefig("boxplot_lad_feature", dpi=300)
