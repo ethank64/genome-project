@@ -12,7 +12,6 @@ from visualization.features import plot_feature_boxplots
 from visualization.radial_position import plot_cluster_radial_positions
 
 
-FEATURES = ["Hist1", "Vmn", "LAD", "RNAPII-S2P", "RNAPII-S5P", "RNAPII-S7P", "enhancer", "H3K9me3", "H3K20me3", "H3K27me3", "H3K36me3", "NANOG", "pou5f1", "sox2", "CTCF"]
 
 def main():
     df = extract_data("./data/data.txt")

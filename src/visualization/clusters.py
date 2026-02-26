@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
+from constants import GRAPHS_DIR
 from models import ClusterSet
 import numpy as np
 import pandas as pd
@@ -56,5 +57,6 @@ def plot_single_cluster_heatmap(matrix: np.ndarray, medoid_id: str, cluster_size
     
     plt.tight_layout()
     plt.subplots_adjust(bottom=0.1)
-    plt.savefig("medoid_cluster_" + medoid_id, dpi=300)
+    GRAPHS_DIR.mkdir(parents=True, exist_ok=True)
+    plt.savefig(GRAPHS_DIR / f"medoid_cluster_{medoid_id}.png", dpi=300)
 

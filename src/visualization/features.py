@@ -1,10 +1,9 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
-from pathlib import Path
 from typing import Dict, List
 
-GRAPHS_DIR = Path("./graphs")
+from constants import GRAPHS_DIR
 
 
 def plot_feature_boxplots(hist1_ratios: Dict[str, List[float]], lad_ratios: Dict[str, List[float]]):
