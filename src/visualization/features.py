@@ -3,6 +3,7 @@ import seaborn as sns
 import pandas as pd
 from typing import Dict, List
 import numpy as np
+from utils import plot_radar
 
 from constants import GRAPHS_DIR
 
@@ -14,24 +15,11 @@ def plot_feature_radar(cluster_set_feature_correlations: Dict[str, Dict[str, flo
         feature_labels = list(cluster_feature_correlations.keys())
         ratios = list(cluster_feature_correlations.values())
 
-        angles = np.linspace(0, 2 * np.pi, len(feature_labels), endpoint=False).tolist()
-
-        angles_closed = angles + angles[:1]
-        ratios_closed = ratios + ratios[:1]
-
-        fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
-
-        ax.plot(angles_closed, ratios_closed, linewidth=2)
-        ax.fill(angles_closed, ratios_closed, alpha=0.25)
-
-        ax.set_xticks(angles)
-        ax.set_xticklabels(feature_labels)
-
-        ax.set_title("Feature Ratios for " + medoid + " Cluster")
-        ax.set_ylim(0, 1)
-
+        radar_title = "Feature Ratios for " + medoid + " Cluster"
         file_name = "feature_ratios_" + medoid
-        plt.savefig(GRAPHS_DIR / file_name, dpi=300)
+        save_path = GRAPHS_DIR / file_name
+
+        plot_radar(feature_labels, ratios, radar_title, save_path)
 
 
 def plot_feature_boxplots(hist1_ratios: Dict[str, List[float]], lad_ratios: Dict[str, List[float]]):

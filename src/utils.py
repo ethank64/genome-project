@@ -1,5 +1,7 @@
 from typing import List
 import random
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 # Implements p5.js's map function to take a value from one range to another
@@ -32,3 +34,22 @@ def create_2d_array(cols: int) -> List[List]:
         array.append([])
 
     return array
+
+def plot_radar(labels, values, title, save_dir):
+    angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=False).tolist()
+
+    angles_closed = angles + angles[:1]
+    ratios_closed = values + values[:1]
+
+    fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
+
+    ax.plot(angles_closed, ratios_closed, linewidth=2)
+    ax.fill(angles_closed, ratios_closed, alpha=0.25)
+
+    ax.set_xticks(angles)
+    ax.set_xticklabels(labels)
+
+    ax.set_title(title)
+    ax.set_ylim(0, 1)
+
+    plt.savefig(save_dir, dpi=300)
