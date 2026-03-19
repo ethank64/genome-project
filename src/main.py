@@ -22,7 +22,7 @@ def main():
     hist1_df = extract_hist1_region(df)
     relevant_nps: List[str] = extract_relevant_nps(hist1_df)
 
-    cluster_sets: List[ClusterSet] = iterate_clusters(relevant_nps, hist1_df, 10)
+    cluster_sets: List[ClusterSet] = iterate_clusters(relevant_nps, hist1_df, 50)
     best_cluster_set: ClusterSet = find_best_cluster_set(cluster_sets)
 
     feature_correlations: Dict[str, Dict[str, float]] = get_cluster_set_feature_correlations(best_cluster_set, hist1_df, features_df)
