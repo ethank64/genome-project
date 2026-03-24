@@ -66,10 +66,16 @@ def get_cosegregation(region: pd.DataFrame, window_start_a, window_start_b):
 def calculate_normalized_linkage(df_a, df_b, df_ab) -> float:
     linkage = calculate_linkage(df_a, df_b, df_ab)
 
+    d_max = 0
+
     if linkage < 0:
-        return min(df_a * df_b, (1 - df_a) * (1 - df_b))
+        d_max = min(df_a * df_b, (1 - df_a) * (1 - df_b))
+    elif linkage > 0:
+        d_max = min(df_b * (1 - df_a), df_a * (1 - df_b))
     else:
-        return min(df_b * (1 - df_a), df_a * (1 - df_b))
+        return 0
+
+    return linkage / d_max
 
 def calculate_linkage(df_a, df_b, df_ab) -> float:
     return df_ab - df_a * df_b
