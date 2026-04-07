@@ -8,6 +8,7 @@ from constants import GRAPHS_DIR
 def plot_linkage_heatmap(df: pd.DataFrame):
     numeric_df = df.astype(float)
     n = len(numeric_df)
+
     fig_size = max(10, n * 0.2)
     fig, ax = plt.subplots(figsize=(fig_size, fig_size))
     sns.heatmap(numeric_df, ax=ax, cbar_kws={"label": "Normalized linkage"})
