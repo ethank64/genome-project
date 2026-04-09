@@ -1,14 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { margin: 0; overflow: hidden; background: #0a0a0a; }
-    #graph { width: 100vw; height: 100vh; }
+    body { margin: 0; }
   </style>
   <script src="https://unpkg.com/3d-force-graph"></script>
 </head>
+
 <body>
   <div id="graph"></div>
   <script>
@@ -18,9 +16,11 @@
       })
       .then(function (data) {
         ForceGraph3D()(document.getElementById("graph"))
-          .backgroundColor("#0a0a0a")
+          .backgroundColor("black")
           .graphData(data)
-          .nodeLabel(function (n) { return String(n.id); });
+          .nodeLabel(function (node) {
+            return String(node.id);
+          });
       })
   </script>
 </body>
