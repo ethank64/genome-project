@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { margin: 0; overflow: hidden; background: #0a0a0a; }
+    #graph { width: 100vw; height: 100vh; }
+  </style>
+  <script src="https://unpkg.com/3d-force-graph"></script>
+</head>
+<body>
+  <div id="graph"></div>
+  <script>
+    fetch("graph_data.json")
+      .then(function (r) {
+        return r.json();
+      })
+      .then(function (data) {
+        ForceGraph3D()(document.getElementById("graph"))
+          .backgroundColor("#0a0a0a")
+          .graphData(data)
+          .nodeLabel(function (n) { return String(n.id); });
+      })
+  </script>
+</body>
+</html>

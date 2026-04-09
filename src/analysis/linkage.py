@@ -3,6 +3,8 @@ import pandas as pd
 
 
 def get_normalized_linkage_table(region: pd.DataFrame) -> pd.DataFrame:
+    print("Filling out linkage table...")
+
     window_starts: List[int] = region['start'].tolist()
 
     df = pd.DataFrame(index=window_starts, columns=window_starts)
