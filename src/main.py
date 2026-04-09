@@ -12,7 +12,7 @@ def main():
     hist1_df = extract_hist1_region(df)
 
     linkage_df = get_normalized_linkage_table(hist1_df)
-    plot_linkage_heatmap(linkage_df)
+    # plot_linkage_heatmap(linkage_df)
 
 if __name__ == "__main__":
     main()
