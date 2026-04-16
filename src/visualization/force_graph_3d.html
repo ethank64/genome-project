@@ -1,26 +1,102 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8" />
+  <title>Hist1 community interaction graphs</title>
   <style>
     body { margin: 0; }
+
+    #controls {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      z-index: 2;
+      padding: 8px;
+      border: 1px solid #000;
+      background: #fff;
+    }
+
+    #controls select { width: 200px; margin-top: 4px; }
+
+    #graph { width: 100vw; height: 100vh; }
   </style>
   <script src="https://unpkg.com/3d-force-graph"></script>
 </head>
 
 <body>
+  <div id="controls">
+    <label for="view-select">Community:</label>
+    <select id="view-select"></select>
+  </div>
+
   <div id="graph"></div>
+
   <script>
-    fetch("graph_data.json")
+    function nodeValAccessor(node) {
+      let centrality = node.val;
+      return centrality
+    }
+
+    fetch("community_graphs.json")
       .then(function (r) {
         return r.json();
       })
-      .then(function (data) {
-        ForceGraph3D()(document.getElementById("graph"))
-          .backgroundColor("black")
-          .graphData(data)
-          .nodeLabel(function (node) {
-            return String(node.id);
+      .then(function (payload) {
+        let communities = (payload && payload.communities);
+        let views = [];
+
+        for (let i = 0; i < communities.length; i++) {
+          let c = communities[i];
+          let cid = String(c.community_start);
+
+          views.push({
+            id: "community-" + i,
+            label: cid,
+            data: { nodes: c.nodes, links: c.links },
           });
+        }
+
+        let select = document.getElementById("view-select");
+        let graphHost = document.getElementById("graph");
+
+        for (let j = 0; j < views.length; j++) {
+          let opt = document.createElement("option");
+          opt.value = String(j);
+          opt.textContent = views[j].label;
+          select.appendChild(opt);
+        }
+
+        let graph = ForceGraph3D()(graphHost)
+          .backgroundColor("#0a0a0c")
+          .nodeVal(nodeValAccessor)
+          .nodeRelSize(5)
+          .nodeColor(function (node) {
+            return node.color != null ? node.color : "#94a3b8";
+          })
+          .linkOpacity(0.55)
+          .linkWidth(0.6)
+          .nodeLabel(function (node) {
+            return (
+              "start: " +
+              String(node.id) +
+              (node.val != null ? "\ncentrality: " + Number(node.val).toFixed(4) : "")
+            );
+          });
+
+        function setView(index) {
+          let view = views[Number(index)];
+
+          graph.graphData({
+            nodes: view.data.nodes,
+            links: view.data.links,
+          });
+        }
+
+        select.addEventListener("change", () => {
+          setView(select.value);
+        });
+
+        setView("0");
       })
   </script>
 </body>

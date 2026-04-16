@@ -1,15 +1,19 @@
 from analysis.linkage import get_normalized_linkage_table
 from analysis.network import (
+    build_communities,
     fill_in_neo4j,
+    get_community_ids,
     get_network_df,
     get_q3_value,
+    print_community_stats,
     print_network_stats,
     reset_network,
 )
-from data_handlers.data_parser import extract_data
+from data_handlers.data_parser import extract_data, extract_features
 from data_handlers.subset_extraction import extract_hist1_region
 
 from neo4j import GraphDatabase
+from visualization.graph_to_json import write_community_graphs_json
 
 
 def main():
@@ -17,6 +21,7 @@ def main():
     AUTH = ("neo4j", "Password123*")
 
     df = extract_data("./data/data.txt")
+    feature_df = extract_features("./data/features.csv")
     hist1_df = extract_hist1_region(df)
 
     linkage_df = get_normalized_linkage_table(hist1_df)
@@ -30,9 +35,18 @@ def main():
         driver.verify_connectivity()
         reset_network(driver)
         fill_in_neo4j(driver, network_df)
-
-
         print_network_stats(driver)
+
+
+        # Get 5 communities
+        community_starts = get_community_ids(driver)
+        build_communities(driver, community_starts, linkage_df)
+        print_community_stats(driver, feature_df)
+        write_community_graphs_json(driver, network_df)
+
+        # Open src/visualization/force_graph_3d.html (e.g. via a local server) to view graphs
+
+        # Visualize as heatmaps
     
 
 

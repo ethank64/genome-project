@@ -6,7 +6,14 @@ from constants import FEATURES
 def extract_features(file_path: str) -> pd.DataFrame:
     print("Extracting features...")
     df = pd.read_csv(file_path)
-    relevant_features_df = df[FEATURES]
+    relevant_features_df = df[FEATURES].copy()
+    start = (
+        df["name"]
+        .str.split(":", n=1, expand=True)[1]
+        .str.split("-", n=1, expand=True)[0]
+        .astype(int)
+    )
+    relevant_features_df["start"] = start.values
     return relevant_features_df
 
 

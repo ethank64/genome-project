@@ -1,10 +1,36 @@
 import json
 from math import floor
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
 from neo4j import Driver
+
+
+def get_degree_centrality_by_start(driver: Driver) -> Dict[int, float]:
+    grab_nodes_with_degree = """
+    MATCH (w:Window)
+    OPTIONAL MATCH (w)-[r:LINKED]-()
+    RETURN w.start AS start, count(r) AS degree
+    """
+
+    with driver.session() as session:
+        nodes = list(session.run(grab_nodes_with_degree))
+
+    node_count = len(nodes)
+    if node_count <= 1:
+        return {int(node["start"]): 0.0 for node in nodes}
+
+    denom = float(node_count - 1)
+
+    centralities: Dict[int, float] = {}
+
+    for node in nodes:
+        start = int(node["start"])
+        degree = int(node["degree"])
+        centralities[start] = degree / denom
+
+    return centralities
 
 def get_q3_value(linkage_table: pd.DataFrame) -> float:
     linkages: List[float] = []
@@ -68,23 +94,10 @@ def fill_in_neo4j(driver: Driver, network_df: pd.DataFrame):
             edges=edges,
         )
 
-    write_window_graph_to_json(window_starts, edges)
-
-
-def write_window_graph_to_json(window_starts, edges: List[Dict[str, int]]):
-    out = Path(__file__).resolve().parent.parent.parent / "data" / "graph_data.json"
-
-    data = {
-        "nodes": [{"id": int(start)} for start in window_starts],
-        "links": [{"source": edge["window_a"], "target": edge["window_b"]} for edge in edges],
-    }
-
-    out.write_text(json.dumps(data), encoding="utf-8")
-
-
 def reset_network(driver: Driver) -> None:
     with driver.session() as session:
         session.run("MATCH (n) DETACH DELETE n")
+
 
 
 def print_network_stats(driver: Driver) -> None:
@@ -121,3 +134,97 @@ def print_network_stats(driver: Driver) -> None:
     for start, centrality in ranked_windows:
         print(f"Start: {start}, Centrality: {centrality / (window_count - 1)}")
 
+
+def get_community_ids(driver: Driver):
+    with driver.session() as session:
+        result = session.run("""
+        MATCH (w:Window)
+        OPTIONAL MATCH (w)-[r:LINKED]-()
+        RETURN w.start AS start, count(r) AS degree
+        ORDER BY degree DESC, start ASC
+        LIMIT 5
+        """)
+
+        community_ids = []
+        for record in result:
+            community_ids.append(record["start"])
+
+        return community_ids
+
+def build_communities(driver: Driver, community_starts, linkage_df: pd.DataFrame):
+    community_starts = [int(start) for start in community_starts]
+
+    with driver.session() as session:
+        result = session.run("""
+        MATCH (w:Window)
+        RETURN w.start AS start
+        """)
+
+        for node in result:
+            current_start = int(node["start"])
+
+            if current_start in community_starts:
+                assigned_community = current_start
+            else:
+                max_linkage = -1.0
+                assigned_community = int(community_starts[0])
+
+                for community_start in community_starts:
+                    cs = int(community_start)
+                    linkage = float(linkage_df.loc[current_start, cs])
+
+                    if linkage > max_linkage:
+                        max_linkage = linkage
+                        assigned_community = cs
+
+            session.run(
+                """
+                MATCH (w:Window {start: $current_start})
+                SET w.community_start = $assigned_community
+                """,
+                current_start=current_start,
+                assigned_community=assigned_community,
+            )
+
+
+def print_community_stats(driver: Driver, features_df: pd.DataFrame) -> None:
+    features_by_start = features_df.set_index("start")
+
+    get_communities = """
+    MATCH (w:Window)
+    RETURN w.community_start AS community_id, collect(w.start) AS members
+    """
+
+    with driver.session() as session:
+        for record in session.run(get_communities):
+            community_id = record["community_id"]
+            members = [int(start) for start in record["members"]]
+
+            member_count = len(members)
+            hist1_positive = 0
+            lad_positive = 0
+
+            for window_start in members:
+                if window_start not in features_by_start.index:
+                    continue
+
+                row = features_by_start.loc[window_start]
+
+                if float(row["Hist1"]) > 0:
+                    hist1_positive += 1
+                if float(row["LAD"]) > 0:
+                    lad_positive += 1
+
+            if not member_count:
+                hist1_percentage = 0.0
+                lad_percentage = 0.0
+            else:
+                hist1_percentage = 100.0 * hist1_positive / member_count
+                lad_percentage = 100.0 * lad_positive / member_count
+
+            print(f"Community: {community_id}")
+            print(f"  Size: {member_count}")
+            print(f"  Windows with Hist1 signal: {hist1_percentage}%")
+            print(f"  Windows with LAD signal: {lad_percentage}%")
+            print(f"  Member window starts: {members}")
+            print('\n')
