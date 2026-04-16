@@ -8,7 +8,7 @@
       position: absolute;
       z-index: 2;
       padding: 8px;
-      background: #fff;
+      background: white;
     }
   </style>
   <script src="https://unpkg.com/3d-force-graph"></script>
@@ -29,31 +29,29 @@
     }
 
     fetch("community_graphs.json")
-      .then(function (r) {
-        return r.json();
-      })
+      .then(response => response.json())
       .then(function (payload) {
-        let communities = (payload && payload.communities);
+        let communities = payload.communities;
         let views = [];
 
         for (let i = 0; i < communities.length; i++) {
-          let c = communities[i];
-          let cid = String(c.community_start);
+          let community = communities[i];
+          let community_start = String(community.community_start);
 
           views.push({
             id: "community-" + i,
-            label: cid,
-            data: { nodes: c.nodes, links: c.links },
+            label: community_start,
+            data: { nodes: community.nodes, links: community.links },
           });
         }
 
         let select = document.getElementById("view-select");
         let graphHost = document.getElementById("graph");
 
-        for (let j = 0; j < views.length; j++) {
+        for (let i = 0; i < views.length; i++) {
           let option = document.createElement("option");
-          option.value = String(j);
-          option.textContent = views[j].label;
+          option.value = String(i);
+          option.textContent = views[i].label;
           select.appendChild(option);
         }
 
@@ -61,11 +59,11 @@
           .backgroundColor("black")
           .nodeVal(nodeValAccessor)
           .nodeRelSize(5)
-          .nodeColor(function (node) {
-            return node.color;
-          })
+          .nodeColor(node => node.color)
           .linkOpacity(0.55)
           .linkWidth(0.6)
+          
+
           
         function setView(index) {
           let view = views[Number(index)];
