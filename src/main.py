@@ -21,8 +21,8 @@ def main():
 
     linkage_df = get_normalized_linkage_table(hist1_df)
 
-    # linage dataframe is literally just the graph! each i j pair is a relationship
     q3 = get_q3_value(linkage_df)
+    print(q3)
     network_df = get_network_df(linkage_df, q3)
 
     print("Connecting to graph db")
@@ -30,6 +30,8 @@ def main():
         driver.verify_connectivity()
         reset_network(driver)
         fill_in_neo4j(driver, network_df)
+
+
         print_network_stats(driver)
     
 

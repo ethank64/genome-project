@@ -69,7 +69,7 @@ def fill_in_neo4j(driver: Driver, network_df: pd.DataFrame):
         )
 
     write_window_graph_to_json(window_starts, edges)
-    
+
 
 def write_window_graph_to_json(window_starts, edges: List[Dict[str, int]]):
     out = Path(__file__).resolve().parent.parent.parent / "data" / "graph_data.json"
@@ -102,9 +102,12 @@ def print_network_stats(driver: Driver) -> None:
             window_with_rank = (record["start"], int(record["degree"]))
             ranked_windows.append(window_with_rank)
 
+    window_count = len(ranked_windows)
     degrees: List[int] = []
     for _, d in ranked_windows:
         degrees.append(d)
+
+    degrees = [degree / (window_count - 1) for degree in degrees]
 
     average_degree_centrality = sum(degrees) / len(degrees)
     min_degree_centrality = min(degrees)
@@ -116,5 +119,5 @@ def print_network_stats(driver: Driver) -> None:
     print("Genomic windows ranked by degree centrality:")
 
     for start, centrality in ranked_windows:
-        print(f"Start: {start}, Centrality: {centrality}")
+        print(f"Start: {start}, Centrality: {centrality / (window_count - 1)}")
 
