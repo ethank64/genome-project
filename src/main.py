@@ -13,6 +13,7 @@ from data_handlers.data_parser import extract_data, extract_features
 from data_handlers.subset_extraction import extract_hist1_region
 
 from neo4j import GraphDatabase
+from visualization.community_heatmap import plot_community_heatmaps
 from visualization.graph_to_json import write_community_graphs_json
 
 
@@ -35,20 +36,14 @@ def main():
         driver.verify_connectivity()
         reset_network(driver)
         fill_in_neo4j(driver, network_df)
-        print_network_stats(driver)
-
+        # print_network_stats(driver)
 
         # Get 5 communities
         community_starts = get_community_ids(driver)
-        build_communities(driver, community_starts, linkage_df)
+        build_communities(driver, community_starts, linkage_df, network_df)
         print_community_stats(driver, feature_df)
         write_community_graphs_json(driver, network_df)
-
-        # Open src/visualization/force_graph_3d.html (e.g. via a local server) to view graphs
-
-        # Visualize as heatmaps
-    
-
+        plot_community_heatmaps(network_df, driver)
 
 
 if __name__ == "__main__":

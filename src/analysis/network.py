@@ -1,7 +1,7 @@
 import json
 from math import floor
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 import pandas as pd
 from neo4j import Driver
@@ -151,7 +151,7 @@ def get_community_ids(driver: Driver):
 
         return community_ids
 
-def build_communities(driver: Driver, community_starts, linkage_df: pd.DataFrame):
+def build_communities(driver: Driver, community_starts, linkage_df: pd.DataFrame, network_df: pd.DataFrame):
     community_starts = [int(start) for start in community_starts]
 
     with driver.session() as session:
@@ -166,16 +166,26 @@ def build_communities(driver: Driver, community_starts, linkage_df: pd.DataFrame
             if current_start in community_starts:
                 assigned_community = current_start
             else:
-                max_linkage = -1.0
-                assigned_community = int(community_starts[0])
-
+                neighboring_hubs = []
                 for community_start in community_starts:
-                    cs = int(community_start)
-                    linkage = float(linkage_df.loc[current_start, cs])
+                    if int(network_df.loc[current_start, community_start]) == 1:
+                        neighboring_hubs.append(community_start)
 
-                    if linkage > max_linkage:
-                        max_linkage = linkage
-                        assigned_community = cs
+                if not neighboring_hubs:
+                    assigned_community = None
+                elif len(neighboring_hubs) == 1:
+                    assigned_community = int(neighboring_hubs[0])
+                else:
+                    best_hub = int(neighboring_hubs[0])
+                    highest_linkage = float(linkage_df.loc[current_start, best_hub])
+
+                    for hub in neighboring_hubs[1:]:
+                        linkage = float(linkage_df.loc[current_start, int(hub)])
+                        if linkage > highest_linkage:
+                            highest_linkage = linkage
+                            best_hub = int(hub)
+
+                    assigned_community = best_hub
 
             session.run(
                 """
@@ -192,6 +202,7 @@ def print_community_stats(driver: Driver, features_df: pd.DataFrame) -> None:
 
     get_communities = """
     MATCH (w:Window)
+    WHERE w.community_start IS NOT NULL
     RETURN w.community_start AS community_id, collect(w.start) AS members
     """
 

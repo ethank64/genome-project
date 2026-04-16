@@ -1,24 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8" />
-  <title>Hist1 community interaction graphs</title>
   <style>
     body { margin: 0; }
 
     #controls {
       position: absolute;
-      top: 8px;
-      left: 8px;
       z-index: 2;
       padding: 8px;
-      border: 1px solid #000;
       background: #fff;
     }
-
-    #controls select { width: 200px; margin-top: 4px; }
-
-    #graph { width: 100vw; height: 100vh; }
   </style>
   <script src="https://unpkg.com/3d-force-graph"></script>
 </head>
@@ -60,29 +51,22 @@
         let graphHost = document.getElementById("graph");
 
         for (let j = 0; j < views.length; j++) {
-          let opt = document.createElement("option");
-          opt.value = String(j);
-          opt.textContent = views[j].label;
-          select.appendChild(opt);
+          let option = document.createElement("option");
+          option.value = String(j);
+          option.textContent = views[j].label;
+          select.appendChild(option);
         }
 
         let graph = ForceGraph3D()(graphHost)
-          .backgroundColor("#0a0a0c")
+          .backgroundColor("black")
           .nodeVal(nodeValAccessor)
           .nodeRelSize(5)
           .nodeColor(function (node) {
-            return node.color != null ? node.color : "#94a3b8";
+            return node.color;
           })
           .linkOpacity(0.55)
           .linkWidth(0.6)
-          .nodeLabel(function (node) {
-            return (
-              "start: " +
-              String(node.id) +
-              (node.val != null ? "\ncentrality: " + Number(node.val).toFixed(4) : "")
-            );
-          });
-
+          
         function setView(index) {
           let view = views[Number(index)];
 

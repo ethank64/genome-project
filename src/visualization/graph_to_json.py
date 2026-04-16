@@ -21,11 +21,10 @@ def write_community_graphs_json(driver: Driver, network_df: pd.DataFrame) -> Non
     """
 
     communities: List[Dict] = []
+
     with driver.session() as session:
         for record in session.run(grab_communities):
             community_id = record["community_id"]
-            if community_id is None:
-                continue
             member_starts = [int(start) for start in record["members"]]
             hub_id = int(community_id)
 
@@ -35,7 +34,12 @@ def write_community_graphs_json(driver: Driver, network_df: pd.DataFrame) -> Non
                 node = {}
                 node["id"] = start
                 node["val"] = float(centrality.get(start, 0.0))
-                node["color"] = "#e11d48" if start == hub_id else "#94a3b8"
+
+                if start == hub_id:
+                    node["color"] = "red"
+                else:
+                    node["color"] = "yellow"
+
                 nodes.append(node)
 
             links: List[Dict[str, int]] = []
@@ -54,4 +58,4 @@ def write_community_graphs_json(driver: Driver, network_df: pd.DataFrame) -> Non
             )
 
     out = _VISUALIZATION_DIR / "community_graphs.json"
-    out.write_text(json.dumps({"communities": communities}), encoding="utf-8")
+    out.write_text(json.dumps({"communities": communities}))
