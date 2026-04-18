@@ -1,4 +1,4 @@
-from typing import List, Set
+from typing import List, Set, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -15,7 +15,8 @@ def fetch_community_members(driver: Driver) -> List[tuple[int, Set[int]]]:
     WHERE w.community_start IS NOT NULL
     RETURN w.community_start AS community_id, collect(w.start) AS members
     """
-    communities: List[tuple[int, Set[int]]] = []
+    communities: List[Tuple[int, Set[int]]] = []
+
     with driver.session() as session:
         for record in session.run(query):
             cid = record["community_id"]
@@ -35,6 +36,7 @@ def plot_community_heatmaps(network_df: pd.DataFrame, driver: Driver) -> None:
 
     for community_id, member_set in communities:
         masked = pd.DataFrame(np.nan, index=network_df.index, columns=network_df.columns, dtype=float)
+
         for window_a in window_starts:
             for window_b in window_starts:
                 if window_a not in member_set or window_b not in member_set:

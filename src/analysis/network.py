@@ -179,7 +179,7 @@ def build_communities(driver: Driver, community_starts, linkage_df: pd.DataFrame
                     best_hub = int(neighboring_hubs[0])
                     highest_linkage = float(linkage_df.loc[current_start, best_hub])
 
-                    for hub in neighboring_hubs[1:]:
+                    for hub in neighboring_hubs:
                         linkage = float(linkage_df.loc[current_start, int(hub)])
                         if linkage > highest_linkage:
                             highest_linkage = linkage
